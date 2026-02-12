@@ -20,6 +20,7 @@ dependencies = [
 io = ["pandas>=2.0"]
 plot = ["matplotlib>=3.7"]
 all = ["pandas>=2.0", "matplotlib>=3.7"]
+test = ["pytest>=8.0", "pandas>=2.0", "matplotlib>=3.7"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

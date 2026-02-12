@@ -92,7 +92,7 @@ def _solve_min_variation_nonnegative(
     raise ValueError("Active-set solver did not converge; constraints may be infeasible.")
 
 
-def point_mass_cloud_from_mass_props_grid(
+def point_mass_cloud_from_mass_props(
     total_mass: float,
     cog_xyz: tuple[float, float, float],
     ixx: float,

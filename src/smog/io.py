@@ -60,3 +60,29 @@ def write_ply(filename: str | Path, positions: np.ndarray, m: np.ndarray | None 
                 file.write(f"{positions[idx,0]} {positions[idx,1]} {positions[idx,2]}\n")
             else:
                 file.write(f"{positions[idx,0]} {positions[idx,1]} {positions[idx,2]} {m[idx]}\n")
+
+
+def write_rbd_pointMasses(df, filepath: str | Path) -> None:
+    """
+    Write DataFrame rows as OpenFOAM point-mass tuples.
+
+    Output format per line:
+      ((cogx cogy cogz ) m )
+    """
+    try:
+        import pandas as pd
+    except ImportError as exc:
+        raise ImportError("pandas is required for write_rbd_pointMasses().") from exc
+
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("df must be a pandas DataFrame")
+
+    required_cols = ["m", "cogx", "cogy", "cogz"]
+    if not all(col in df.columns for col in required_cols):
+        raise ValueError(f"DataFrame must contain columns {required_cols}")
+
+    out_path = Path(filepath)
+    with out_path.open("w", encoding="utf-8") as file:
+        for _, row in df.iterrows():
+            line = f"(({row['cogx']} {row['cogy']} {row['cogz']} ) {row['m']} )"
+            file.write(line + "\n")
