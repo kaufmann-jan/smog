@@ -33,18 +33,18 @@ def test_sectional_mass_pipeline_creates_outputs(tmp_path: Path) -> None:
     frames = []
     all_pos = []
     all_m = []
-    for _, row in masses.iterrows():
+    for section in masses.to_dict("records"):
         pos, m = point_mass_cloud_from_mass_props(
-            total_mass=float(row["m"]),
-            cog_xyz=(float(row["cog_x"]), float(row["cog_y"]), float(row["cog_z"])),
-            ixx=float(row["Ixx"]),
-            iyy=float(row["Iyy"]),
-            izz=float(row["Izz"]),
+            total_mass=float(section["m"]),
+            cog_xyz=(float(section["cog_x"]), float(section["cog_y"]), float(section["cog_z"])),
+            ixx=float(section["Ixx"]),
+            iyy=float(section["Iyy"]),
+            izz=float(section["Izz"]),
             n_points=20 * 6 * 6,
             span_xyz=(
-                float(row["xend"] - row["xstart"]),
-                _breadth_at_x(breadth, float(row["cog_x"])),
-                2.0 * float(row["cog_z"]),
+                float(section["xend"] - section["xstart"]),
+                _breadth_at_x(breadth, float(section["cog_x"])),
+                2.0 * float(section["cog_z"]),
             ),
         )
         frames.append(mass_cloud_to_dataframe(pos, m))
