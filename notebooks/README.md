@@ -16,9 +16,3 @@ source .venv/bin/activate
 pip install -e ".[all]"
 jupyter notebook notebooks/smog_usage_example.ipynb
 ```
-
-Install directly from GitHub (including optional plotting/data dependencies):
-
-```bash
-pip install "git+https://github.com/kaufmann-jan/smog.git#egg=smog[all]"
-```

@@ -3,6 +3,14 @@
 `smog` computes point-mass clouds from target mass properties (total mass, CoG, and inertias),
 and provides output/export helpers and plotting utilities.
 
+## Installation
+
+Install directly from GitHub (including optional plotting/data dependencies):
+
+```bash
+pip install "git+https://github.com/kaufmann-jan/smog.git#egg=smog[all]"
+```
+
 ## Package layout
 
 - `src/smog/cloud.py`: cloud generation and mass-property computations
