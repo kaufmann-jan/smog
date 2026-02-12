@@ -5,13 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "smog"
 dynamic = ["version"]
-description = "smog Python package"
+description = "Point-mass cloud generation from target mass properties with export and plotting helpers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "GPL-3.0-or-later"
 authors = [
   { name = "Jan Kaufmann" }
 ]
+dependencies = [
+  "numpy>=1.24"
+]
+
+[project.optional-dependencies]
+io = ["pandas>=2.0"]
+plot = ["matplotlib>=3.7"]
+all = ["pandas>=2.0", "matplotlib>=3.7"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
