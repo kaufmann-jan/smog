@@ -2,13 +2,26 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 
 from smog.cloud import compute_mass_props
 
 
-def scatter_plot(pos: np.ndarray, m: np.ndarray | None = None):
-    """Render a 3D scatter plot of point locations and optional center of mass."""
+def scatter_plot(
+    pos: np.ndarray,
+    m: np.ndarray | None = None,
+    *,
+    save_path: str | Path | None = None,
+    show: bool = True,
+    return_ax: bool = False,
+):
+    """
+    Render a 3D scatter plot of point locations and optional center of mass.
+
+    For headless usage, pass ``show=False`` and optionally ``save_path``.
+    """
     try:
         import matplotlib.pyplot as plt
     except ImportError as exc:
@@ -42,4 +55,15 @@ def scatter_plot(pos: np.ndarray, m: np.ndarray | None = None):
     ax.set_zlim(mid[2] - max_range, mid[2] + max_range)
 
     plt.tight_layout()
-    plt.show()
+
+    if save_path is not None:
+        fig.savefig(Path(save_path))
+
+    if show:
+        plt.show()
+    elif not return_ax:
+        plt.close(fig)
+
+    if return_ax:
+        return ax
+    return None
