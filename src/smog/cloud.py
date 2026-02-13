@@ -101,10 +101,16 @@ def point_mass_cloud_from_mass_props(
     n_points: int,
     span_xyz: tuple[float, float, float],
     *,
+    grid_offset_xyz: tuple[float, float, float] | None = None,
     tol: float = 1e-8,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Build a regular point-mass cloud that matches mass, CoG, and diagonal inertias.
+
+    The grid is centered around the CoG by default. Use ``grid_offset_xyz`` to shift
+    the cloud relative to the CoG while still enforcing the target CoG and inertias.
+    Example: with ``cog_xyz=(..., ..., 1.0)``, ``span_xyz=(..., ..., 4.0)``, and
+    ``grid_offset_xyz=(0.0, 0.0, 1.0)``, z-points span approximately 0..4.
     """
     total_mass = float(total_mass)
     if total_mass <= 0:
@@ -116,11 +122,15 @@ def point_mass_cloud_from_mass_props(
         raise ValueError("n_points must be >= 7 (need at least 7 DoF for constraints).")
 
     cx, cy, cz = map(float, cog_xyz)
+    if grid_offset_xyz is None:
+        ox, oy, oz = 0.0, 0.0, 0.0
+    else:
+        ox, oy, oz = map(float, grid_offset_xyz)
 
     nx, ny, nz = _choose_grid_shape(n_points)
-    x = _linspace_centered(nx, sx / 2.0)
-    y = _linspace_centered(ny, sy / 2.0)
-    z = _linspace_centered(nz, sz / 2.0)
+    x = _linspace_centered(nx, sx / 2.0) + ox
+    y = _linspace_centered(ny, sy / 2.0) + oy
+    z = _linspace_centered(nz, sz / 2.0) + oz
     grid_x, grid_y, grid_z = np.meshgrid(x, y, z, indexing="ij")
     rel = np.column_stack([grid_x.ravel(), grid_y.ravel(), grid_z.ravel()])
     n_grid = rel.shape[0]
@@ -140,9 +150,13 @@ def point_mass_cloud_from_mass_props(
     )
     b = np.array([total_mass, 0.0, 0.0, 0.0, float(ixx), float(iyy), float(izz)], dtype=float)
 
-    r2_max_x = (sy / 2) ** 2 + (sz / 2) ** 2
-    r2_max_y = (sx / 2) ** 2 + (sz / 2) ** 2
-    r2_max_z = (sx / 2) ** 2 + (sy / 2) ** 2
+    x_abs_max = abs(ox) + (sx / 2)
+    y_abs_max = abs(oy) + (sy / 2)
+    z_abs_max = abs(oz) + (sz / 2)
+
+    r2_max_x = y_abs_max**2 + z_abs_max**2
+    r2_max_y = x_abs_max**2 + z_abs_max**2
+    r2_max_z = x_abs_max**2 + y_abs_max**2
     if ixx > total_mass * r2_max_x + 1e-9 or iyy > total_mass * r2_max_y + 1e-9 or izz > total_mass * r2_max_z + 1e-9:
         raise ValueError(
             "Requested inertia is too large for the given mass and span. "
